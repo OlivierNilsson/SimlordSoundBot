@@ -1,0 +1,11 @@
+{
+    "app_token": "ODIxOTAxNTMyNDQ1NTQwMzUy.YFKdcw.u7Zt9bwdsYrUTAVA_F2M_G3FdXw",
+    "default_prefix": "-",
+    "guilds": {
+        "540181227005542430": {
+            "id": 540181227005542430,
+            "name": "Serveur cool",
+            "prefix": "-"
+        }
+    }
+}
