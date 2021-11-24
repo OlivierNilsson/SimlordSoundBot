@@ -1,32 +1,45 @@
+
 import discord
 import logging
 import json
 import os
+
 from typing import Dict
+from dotenv import load_dotenv
+
 from commands.AbstractCommand import AbstractCommand
 from commands import JoinCommand, PrefixCommand
 from dotenv import load_dotenv
 
 
 class SimlordSoundBot(discord.Client):
-    def __init__(self):
+
+    def __init__(self) -> None:
         super().__init__()
         self.commands: Dict[str, AbstractCommand] = {
             'join': JoinCommand,
             'prefix': PrefixCommand,
         }
         load_dotenv()
+        settings_filename = os.getenv("SETTINGS")
 
-        APP_TOKEN = os.getenv("TOKEN")
-        with open('settings.json') as f:
+        if not os.path.isfile(settings_filename):
+            file_content = '{"guilds": {}, "default_prefix": "-"}'
+            with open(settings_filename, 'w+') as f:
+                f.write(file_content)
+
+        with open(settings_filename) as f:
             self.settings = json.load(f)
-        self.run(APP_TOKEN)
 
-    #  To explore
-    def __del__(self):
-        # self.update_settings()
-        #del self.commands
-        #del self.settings
+    def __enter__(self):
+        return self
+
+    #  Cleanup when the bot is about to close/disconnect
+    def __exit__(self, *args, **kwargs) -> None:
+        self.sync_settings()
+        self.update_settings()
+        del self.commands
+        del self.settings
         print("Bot Offline !")
 
     async def on_ready(self) -> None:
@@ -34,7 +47,8 @@ class SimlordSoundBot(discord.Client):
         self.sync_settings()
 
     async def on_guild_join(self, guild):
-        print(f"[{__name__}] je viens de join {guild.name}({guild.id})")
+        #  Adds the new guild to the settings in the memory
+        print(f"[{__name__}] Je viens de join {guild.name}({guild.id})")
         self.settings['guilds'][guild.id] = {
             'id': guild.id,
             'name': guild.name,
@@ -42,16 +56,15 @@ class SimlordSoundBot(discord.Client):
         }
 
     async def on_guild_remove(self, guild):
-        print(f"[{__name__}] je viens de leave {guild.name}({guild.id})")
-        print(self.settings['guilds'].keys())
+        print(f"[{__name__}] Je viens de leave {guild.name}({guild.id})")
         try:
-            del self.settings['guilds'][str(guild.id)]
+            del self.settings['guilds'][guild.id]
         except KeyError:
             logging.warning(
                 f"[{__name__}] {guild.id} introuvable dans les settings !")
 
     async def on_message(self, message: discord.Message) -> None:
-        if not message.author.bot and message.content[0] == self.settings['guilds'][str(message.guild.id)]['prefix']:
+        if not message.author.bot and message.content[0] == self.settings['guilds'][message.guild.id]['prefix']:
             args = message.content[1:].split(" ")
             if args[0] in self.commands:
                 command = self.commands[args[0]]
@@ -59,6 +72,7 @@ class SimlordSoundBot(discord.Client):
                 await command.exec()
 
     def sync_settings(self) -> None:
+        #  Make sure that every guild is in the settings
         for guild in self.guilds:
             if str(guild.id) not in self.settings['guilds']:
                 self.settings['guilds'][guild.id] = {
@@ -66,14 +80,16 @@ class SimlordSoundBot(discord.Client):
                     'name': guild.name,
                     'prefix': self.settings['default_prefix']
                 }
+        
+        #  Remove guilds that are no longer supposed to be in the settings
         keys_to_delete = []
         for guild in self.settings['guilds']:
             if str(guild) not in [str(x.id) for x in self.guilds]:
                 keys_to_delete.append(str(guild))
         for key in keys_to_delete:
             del self.settings['guilds'][key]
-        self.update_settings()
 
     def update_settings(self):
+        # Writes the settings from memory into the file
         with open('settings.json', 'w+') as settings_file:
             json.dump(self.settings, settings_file, indent=4)

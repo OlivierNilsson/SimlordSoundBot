@@ -1,10 +1,10 @@
 {
-    "default_prefix": "-",
     "guilds": {
         "540181227005542430": {
             "id": 540181227005542430,
             "name": "Serveur cool",
             "prefix": "-"
         }
-    }
+    },
+    "default_prefix": "-"
 }
