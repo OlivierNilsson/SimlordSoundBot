@@ -21,15 +21,8 @@ class SimlordSoundBot(discord.Client):
             'prefix': PrefixCommand,
         }
         load_dotenv()
-        settings_filename = os.getenv("SETTINGS")
 
-        if not os.path.isfile(settings_filename):
-            file_content = '{"guilds": {}, "default_prefix": "-"}'
-            with open(settings_filename, 'w+') as f:
-                f.write(file_content)
-
-        with open(settings_filename) as f:
-            self.settings = json.load(f)
+        self.handle_settings_file()
 
     def __enter__(self):
         return self
@@ -40,7 +33,7 @@ class SimlordSoundBot(discord.Client):
         self.update_settings()
         del self.commands
         del self.settings
-        print("Bot Offline !")
+        print("\nBot Offline !")
 
     async def on_ready(self) -> None:
         print('Bot online !')
@@ -80,7 +73,7 @@ class SimlordSoundBot(discord.Client):
                     'name': guild.name,
                     'prefix': self.settings['default_prefix']
                 }
-        
+
         #  Remove guilds that are no longer supposed to be in the settings
         keys_to_delete = []
         for guild in self.settings['guilds']:
@@ -93,3 +86,25 @@ class SimlordSoundBot(discord.Client):
         # Writes the settings from memory into the file
         with open('settings.json', 'w+') as settings_file:
             json.dump(self.settings, settings_file, indent=4)
+
+    def handle_settings_file(self):
+        # make sure a valid
+        settings_filename = os.getenv("SETTINGS")
+        settings_filename = settings_filename if settings_filename else 'settings.json'
+
+        if not os.path.isfile(settings_filename):
+            self.create_settings_file(settings_filename)
+
+        with open(settings_filename) as f:
+            try:
+                self.settings = json.load(f)
+            except:
+                self.create_settings_file(settings_filename)
+                self.handle_settings_file()
+
+    def create_settings_file(cls, settings_filename: str) -> None:
+        #  Default settings file
+
+        file_content = '{"guilds": {}, "default_prefix": "-"}'
+        with open(settings_filename, 'w+') as f:
+            f.write(file_content)
