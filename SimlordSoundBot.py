@@ -1,9 +1,11 @@
 import discord
 import logging
 import json
+import os
 from typing import Dict
 from commands.AbstractCommand import AbstractCommand
 from commands import JoinCommand, PrefixCommand
+from dotenv import load_dotenv
 
 
 class SimlordSoundBot(discord.Client):
@@ -13,13 +15,16 @@ class SimlordSoundBot(discord.Client):
             'join': JoinCommand,
             'prefix': PrefixCommand,
         }
+        load_dotenv()
+
+        APP_TOKEN = os.getenv("TOKEN")
         with open('settings.json') as f:
             self.settings = json.load(f)
-        self.run(self.settings['app_token'])
+        self.run(APP_TOKEN)
 
     #  To explore
     def __del__(self):
-        self.update_settings()
+        # self.update_settings()
         #del self.commands
         #del self.settings
         print("Bot Offline !")
