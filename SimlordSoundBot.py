@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from commands.AbstractCommand import AbstractCommand
 from commands import JoinCommand, PrefixCommand
 from dotenv import load_dotenv
+from utils import Utils
 
 
 class SimlordSoundBot(discord.Client):
@@ -57,6 +58,8 @@ class SimlordSoundBot(discord.Client):
                 f"[{__name__}] {guild.id} introuvable dans les settings !")
 
     async def on_message(self, message: discord.Message) -> None:
+        if message.content == '4545':
+            Utils.download_yt_mp3_from_url('https://www.youtube.com/watch?v=Xz9moTEkBH8', 'nice.mp3')
         if not message.author.bot and message.content[0] == self.settings['guilds'][message.guild.id]['prefix']:
             args = message.content[1:].split(" ")
             if args[0] in self.commands:
@@ -67,7 +70,7 @@ class SimlordSoundBot(discord.Client):
     def sync_settings(self) -> None:
         #  Make sure that every guild is in the settings
         for guild in self.guilds:
-            if str(guild.id) not in self.settings['guilds']:
+            if guild.id not in self.settings['guilds']:
                 self.settings['guilds'][guild.id] = {
                     'id': guild.id,
                     'name': guild.name,
@@ -77,8 +80,8 @@ class SimlordSoundBot(discord.Client):
         #  Remove guilds that are no longer supposed to be in the settings
         keys_to_delete = []
         for guild in self.settings['guilds']:
-            if str(guild) not in [str(x.id) for x in self.guilds]:
-                keys_to_delete.append(str(guild))
+            if guild not in [x.id for x in self.guilds]:
+                keys_to_delete.append(guild)
         for key in keys_to_delete:
             del self.settings['guilds'][key]
 
@@ -102,7 +105,8 @@ class SimlordSoundBot(discord.Client):
                 self.create_settings_file(settings_filename)
                 self.handle_settings_file()
 
-    def create_settings_file(cls, settings_filename: str) -> None:
+    @staticmethod
+    def create_settings_file(settings_filename: str) -> None:
         #  Default settings file
 
         file_content = '{"guilds": {}, "default_prefix": "-"}'

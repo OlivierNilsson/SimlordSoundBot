@@ -13,3 +13,4 @@ INSTALLATIONS
 
 - pip3 install -U discord.py
 - pip3 install -U python-dotenv
+- pip3 install -U youtube-dl
