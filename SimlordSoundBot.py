@@ -112,3 +112,9 @@ class SimlordSoundBot(discord.Client):
         file_content = '{"guilds": {}, "default_prefix": "-"}'
         with open(settings_filename, 'w+') as f:
             f.write(file_content)
+
+        # Auto role when joinning discord server
+    @client.event
+    async def on_member_join(member):
+        role - discord.utils.get(member.server.roles, name-'Supporters')
+        await client.add_roles(member, role)
