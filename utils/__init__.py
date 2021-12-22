@@ -10,8 +10,11 @@ class Utils:
         return message.author.voice.channel
 
     @staticmethod
-    def download_yt_mp3_from_url(url, filename):
+    def download_yt_mp3_from_url(url, path):
 
+        print("url: ", url)
+        path = 'sounds/' + path
+        print("Path: ", path)
         ydl_opts = {
             'format': 'bestaudio/best',
             'postprocessors': [{
@@ -19,8 +22,13 @@ class Utils:
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
-            "outtmpl": f"sounds/{filename}",
+            "outtmpl": path + ".mp3",
+            'keepvideo': False,
         }
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
+
+    @staticmethod
+    def check_if_contains_images(message: discord.Message) -> bool:
+        return (len(message.attachments) >= 1)

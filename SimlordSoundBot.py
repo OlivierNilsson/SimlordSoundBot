@@ -8,7 +8,7 @@ from typing import Dict
 from dotenv import load_dotenv
 
 from commands.AbstractCommand import AbstractCommand
-from commands import JoinCommand, PrefixCommand
+from commands import JoinCommand, PrefixCommand, SaveCommand
 from dotenv import load_dotenv
 from utils import Utils
 
@@ -20,6 +20,7 @@ class SimlordSoundBot(discord.Client):
         self.commands: Dict[str, AbstractCommand] = {
             'join': JoinCommand,
             'prefix': PrefixCommand,
+            'save': SaveCommand,
         }
         load_dotenv()
 
@@ -58,14 +59,17 @@ class SimlordSoundBot(discord.Client):
                 f"[{__name__}] {guild.id} introuvable dans les settings !")
 
     async def on_message(self, message: discord.Message) -> None:
-        if message.content == '4545':
-            Utils.download_yt_mp3_from_url('https://www.youtube.com/watch?v=Xz9moTEkBH8', 'nice.mp3')
-        if not message.author.bot and message.content[0] == self.settings['guilds'][message.guild.id]['prefix']:
-            args = message.content[1:].split(" ")
-            if args[0] in self.commands:
-                command = self.commands[args[0]]
-                command.setup(message, args, self)
-                await command.exec()
+        if message.author.bot:
+            return
+        if Utils.check_if_contains_images(message):
+            return
+        if message.content[0] != self.settings['guilds'][message.guild.id]['prefix']:
+            return
+
+        args = message.content[1:].split(" ")
+        if args[0] in self.commands:
+            command = self.commands[args[0]](message, args[1:], self)
+            await command.exec()
 
     def sync_settings(self) -> None:
         #  Make sure that every guild is in the settings
