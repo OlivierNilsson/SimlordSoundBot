@@ -34,7 +34,7 @@ class SaveCommand(AbstractCommand):
         if len(self.args) != 2:
             self.error_msg = 'Il manque des arguments ! (-save {url} {name})'
             return False
-        if 'https://www.youtube.com/watch?v=' not in self.args[0]:
+        if not Utils.check_if_yt_url(self.args[0]):
             self.error_msg = "L'url n'est pas valide ! (https://www.youtube.com/watch?v={video_id})"
             return False
         return True

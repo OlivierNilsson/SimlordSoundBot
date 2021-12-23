@@ -8,7 +8,7 @@ from typing import Dict
 from dotenv import load_dotenv
 
 from commands.AbstractCommand import AbstractCommand
-from commands import JoinCommand, PrefixCommand, SaveCommand
+from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand
 from dotenv import load_dotenv
 from utils import Utils
 
@@ -21,6 +21,7 @@ class SimlordSoundBot(discord.Client):
             'join': JoinCommand,
             'prefix': PrefixCommand,
             'save': SaveCommand,
+            'play': PlayCommand,
         }
         load_dotenv()
 
@@ -108,6 +109,12 @@ class SimlordSoundBot(discord.Client):
             except:
                 self.create_settings_file(settings_filename)
                 self.handle_settings_file()
+
+    def get_voice_client_from_guild(self, guild: discord.Guild) -> discord.VoiceClient:
+        for x in self.voice_clients:
+            if x.guild == guild:
+                return x
+        return None
 
     @staticmethod
     def create_settings_file(settings_filename: str) -> None:

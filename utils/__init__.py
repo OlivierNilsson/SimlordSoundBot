@@ -24,6 +24,8 @@ class Utils:
             }],
             "outtmpl": path + ".mp3",
             'keepvideo': False,
+            'noplaylist': True,
+            'extractaudio': True,
         }
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -32,3 +34,7 @@ class Utils:
     @staticmethod
     def check_if_contains_images(message: discord.Message) -> bool:
         return (len(message.attachments) >= 1)
+
+    @staticmethod
+    def check_if_yt_url(url: str) -> bool:
+        return ('https://www.youtube.com/watch?v=' in url)
