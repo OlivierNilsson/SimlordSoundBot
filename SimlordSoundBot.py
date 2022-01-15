@@ -24,7 +24,7 @@ class SimlordSoundBot(discord.Client):
             'play': PlayCommand,
         }
         load_dotenv()
-
+        self.clean_tmp_songs()
         self.handle_settings_file()
 
     def __enter__(self):
@@ -64,7 +64,11 @@ class SimlordSoundBot(discord.Client):
             return
         if Utils.check_if_contains_images(message):
             return
-        if message.content[0] != self.settings['guilds'][message.guild.id]['prefix']:
+        try:
+            if message.content[0] != self.settings['guilds'][message.guild.id]['prefix']:
+                return
+        except IndexError:
+            # TODO Find a normal way to handle stickers
             return
 
         args = message.content[1:].split(" ")
@@ -115,6 +119,15 @@ class SimlordSoundBot(discord.Client):
             if x.guild == guild:
                 return x
         return None
+
+    def clean_tmp_songs(self) -> None:
+        for (dirpath, dirnames, filenames) in os.walk('sounds'):
+            for guild_dir in dirnames:
+                for (dirpath, dirnames, filenames) in os.walk('sounds/' + guild_dir):
+                    for filename in filenames:
+                        if '_del_' in filename:
+                            os.remove(f'sounds/{guild_dir}/{filename}')
+
 
     @staticmethod
     def create_settings_file(settings_filename: str) -> None:

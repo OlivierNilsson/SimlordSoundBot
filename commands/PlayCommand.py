@@ -18,7 +18,6 @@ class PlayCommand(AbstractCommand):
         if users_vc is not None:
             guild_id = str(self.message.guild.id)
             url_name = self.args[0]
-            print(self.args[0])
             if Utils.check_if_yt_url(url_name):
                 if len(self.args) > 1:
                     if self.args[1] == '-save':
