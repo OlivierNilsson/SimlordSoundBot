@@ -8,7 +8,7 @@ from typing import Dict
 from dotenv import load_dotenv
 
 from commands.AbstractCommand import AbstractCommand
-from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand, PauseCommand, ResumeCommand
+from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand, PauseCommand, ResumeCommand, SkipCommand
 from utils import Utils
 
 
@@ -23,6 +23,7 @@ class SimlordSoundBot(discord.Client):
             'play': PlayCommand,
             'pause': PauseCommand,
             'resume': ResumeCommand,
+            'skip': SkipCommand,
         }
         self.queues: Dict[str, List[str]] = {}
         load_dotenv()
