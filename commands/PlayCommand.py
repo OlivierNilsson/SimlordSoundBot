@@ -31,9 +31,14 @@ class PlayCommand(AbstractCommand):
     def play_next(self, guild_id: str, voice_client: discord.VoiceClient):
         if len(self.client.queues[guild_id]) >= 1:
             del self.client.queues[guild_id][0]
-            next_song = self.client.queues[guild_id][0]
-            source = discord.FFmpegPCMAudio(next_song)
-            voice_client.play(source, after=lambda e: self.play_next(guild_id, voice_client))
+            try:
+                next_song = self.client.queues[guild_id][0]
+                source = discord.FFmpegPCMAudio(next_song)
+                voice_client.play(source, after=lambda e: self.play_next(guild_id, voice_client))
+            except IndexError:
+                #  Queue ended
+                # TODO Make this clean
+                pass
 
     def setup_queue(self, guild_id: str):
         if guild_id not in self.client.queues:
