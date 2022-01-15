@@ -7,7 +7,7 @@ from pytube import YouTube
 class Utils:
 
     @staticmethod
-    def get_vc_from_message(message: discord.Message):
+    def get_vc_from_message(message: discord.Message) -> discord.VoiceChannel:
         return message.author.voice.channel
 
     @staticmethod

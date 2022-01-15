@@ -8,8 +8,7 @@ from typing import Dict
 from dotenv import load_dotenv
 
 from commands.AbstractCommand import AbstractCommand
-from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand
-from dotenv import load_dotenv
+from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand, PauseCommand
 from utils import Utils
 
 
@@ -22,7 +21,9 @@ class SimlordSoundBot(discord.Client):
             'prefix': PrefixCommand,
             'save': SaveCommand,
             'play': PlayCommand,
+            'pause': PauseCommand,
         }
+        self.queues: Dict[str, List[str]] = {}
         load_dotenv()
         self.clean_tmp_songs()
         self.handle_settings_file()
@@ -120,7 +121,8 @@ class SimlordSoundBot(discord.Client):
                 return x
         return None
 
-    def clean_tmp_songs(self) -> None:
+    @staticmethod
+    def clean_tmp_songs() -> None:
         for (dirpath, dirnames, filenames) in os.walk('sounds'):
             for guild_dir in dirnames:
                 for (dirpath, dirnames, filenames) in os.walk('sounds/' + guild_dir):
