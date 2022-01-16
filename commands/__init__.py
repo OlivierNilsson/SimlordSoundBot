@@ -5,3 +5,4 @@ from .PlayCommand import PlayCommand
 from .PauseCommand import PauseCommand
 from .ResumeCommand import ResumeCommand
 from .SkipCommand import SkipCommand
+from .ListCommand import ListCommand

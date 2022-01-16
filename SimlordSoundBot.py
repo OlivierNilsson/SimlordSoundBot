@@ -8,7 +8,7 @@ from typing import Dict
 from dotenv import load_dotenv
 
 from commands.AbstractCommand import AbstractCommand
-from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand, PauseCommand, ResumeCommand, SkipCommand
+from commands import JoinCommand, PrefixCommand, SaveCommand, PlayCommand, PauseCommand, ResumeCommand, SkipCommand, ListCommand
 from utils import Utils
 
 
@@ -24,6 +24,7 @@ class SimlordSoundBot(discord.Client):
             'pause': PauseCommand,
             'resume': ResumeCommand,
             'skip': SkipCommand,
+            'list': ListCommand,
         }
         self.queues: Dict[str, List[str]] = {}
         load_dotenv()
@@ -43,6 +44,8 @@ class SimlordSoundBot(discord.Client):
 
     async def on_ready(self) -> None:
         print('Bot online !')
+        activity = discord.Activity(type=discord.ActivityType.listening, name='to some nice bop')
+        await self.change_presence(activity=activity)
         self.sync_settings()
 
     async def on_guild_join(self, guild):
