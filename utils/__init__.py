@@ -1,6 +1,6 @@
 import discord
 import os
-import youtube_dl
+#import youtube_dl
 from pytube import YouTube
 
 
@@ -14,7 +14,7 @@ class Utils:
     def download_yt_mp3_from_url(url, path):
         yt = YouTube(url)
         print("Downloading ", url)
-        path = 'sounds/' + path
+        path = os.getenv("BASE_PATH") + '/sounds/' + path
         yt.streams.filter(only_audio=True).desc().first().download(filename=path + '.mp3')
 
 

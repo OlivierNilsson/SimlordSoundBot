@@ -4,6 +4,7 @@ from commands.AbstractCommand import AbstractCommand
 from commands import JoinCommand, SaveCommand
 from utils import Utils
 import time
+import os
 
 
 class PlayCommand(AbstractCommand):
@@ -17,7 +18,7 @@ class PlayCommand(AbstractCommand):
         users_vc = self.client.get_voice_client_from_guild(self.message.guild)
         if users_vc is not None:
             path = await self.download_song()
-            path = f'sounds/{path}'
+            path = f'{os.getenv("BASE_PATH")}/sounds/{path}'
             guild_id = str(users_vc.guild.id)
             self.setup_queue(guild_id)
             self.client.queues[guild_id].append(path)

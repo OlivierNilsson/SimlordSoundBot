@@ -1,10 +1,10 @@
+#!/usr/bin/env python
 
 import os
 
-
+from SimlordSoundBot import SimlordSoundBot
 from dotenv import load_dotenv
 
-from SimlordSoundBot import SimlordSoundBot
 
 
 

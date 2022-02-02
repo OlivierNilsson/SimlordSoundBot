@@ -26,7 +26,7 @@ class SaveCommand(AbstractCommand):
 
     def create_guild_folder(self) -> None:
         guild_id = str(self.message.guild.id)
-        path = f'sounds/{guild_id}'
+        path = f'{os.getenv("BASE_PATH")}/sounds/{guild_id}'
         if not os.path.isdir(path):
             os.makedirs(path)
 
